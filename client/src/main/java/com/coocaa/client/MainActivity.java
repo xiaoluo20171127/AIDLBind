@@ -9,11 +9,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.coocaa.bindpoolaidl.Book;
 import com.coocaa.bindpoolaidl.IBookManage;
 import com.coocaa.bindpoolaidl.IPersonManage;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    IPersonManage mPersonManage;
+    IBookManage mBookManage;
+    Button mAddBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,25 +36,34 @@ public class MainActivity extends AppCompatActivity {
                 }).start();
             }
         });
-
+        findViewById(R.id.addBook).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    mBookManage.addBook(new Book("shediaoyingxiongzhuang",123));
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void startBinderPool() {
         BinderPool binderPool = BinderPool.getInstance(this);
         //第一个模块
         IBinder bookBinder = binderPool.queryBinder(BinderPool.TYPE_BOOK);
-        IBookManage iBookManage = IBookManage.Stub.asInterface(bookBinder);
+        mBookManage = IBookManage.Stub.asInterface(bookBinder);
         try {
-            String name = iBookManage.getAllBook().get(0).getName();
+            String name = mBookManage.getAllBook().get(0).getName();
             Log.e(TAG,name);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
         //第二个模块
         IBinder binder = binderPool.queryBinder(BinderPool.TYPE_PERSON);
-        IPersonManage personManage = IPersonManage.Stub.asInterface(binder);
+        mPersonManage = IPersonManage.Stub.asInterface(binder);
         try {
-            String name = personManage.getAllPerson().get(0).getName();
+            String name = mPersonManage.getAllPerson().get(0).getName();
             Log.e(TAG,name);
         } catch (RemoteException e) {
             e.printStackTrace();

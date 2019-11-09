@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.widget.Toast;
 
 import com.coocaa.bindpoolaidl.IBindPool;
 
@@ -57,7 +58,7 @@ public class BinderPool {
     public IBinder queryBinder(int binderCode) {
         IBinder binder = null;
         try {
-            if ( mBindPool!= null) {
+            if (mBindPool != null) {
                 binder = mBindPool.queryBinder(binderCode);
             }
         } catch (RemoteException e) {
@@ -91,6 +92,7 @@ public class BinderPool {
     private ServiceConnection conn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Toast.makeText(mContext, Thread.currentThread().getName(), Toast.LENGTH_SHORT).show();
             mBindPool = IBindPool.Stub.asInterface(service);
             //绑定死亡监听
             try {
